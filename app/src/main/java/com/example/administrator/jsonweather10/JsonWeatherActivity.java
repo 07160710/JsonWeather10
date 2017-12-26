@@ -1,5 +1,6 @@
 package com.example.administrator.jsonweather10;
 
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,10 +19,15 @@ import java.net.URL;
 
 public class JsonWeatherActivity extends AppCompatActivity implements Runnable{
     private String cityname="广州";
+    JsonWeatherActivity activity;
     private String url1="http://wthrcdn.etouch.cn/weather_mini?city="+cityname;
     private EditText mCityname;
     private Button mSearch;
     private LinearLayout mShowTV;
+    public JsonWeatherActivity(JsonWeatherActivity activity,String url){
+        this.activity = activity;
+        this.url1 = url;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,10 +43,10 @@ public class JsonWeatherActivity extends AppCompatActivity implements Runnable{
                 Toast.makeText(JsonWeatherActivity.this,"正在查询天气...",Toast.LENGTH_LONG).show();
                 Thread th =new Thread();
                 th.start();
+
             }
         });
     }
-
     @Override
     public void run() {
         showWeather();
@@ -64,6 +70,9 @@ public class JsonWeatherActivity extends AppCompatActivity implements Runnable{
             StringBuffer weatherInfo = new StringBuffer();
             weatherInfo.append("温度："+cityweather.getString("high"));
             weatherInfo.append("天气提示："+cityweather.getString("ganmao"));
+            Message message = new Message();
+            message.what = 1;
+            message.obj = weatherInfo;
         }catch (Exception e){
             e.printStackTrace();
         }
