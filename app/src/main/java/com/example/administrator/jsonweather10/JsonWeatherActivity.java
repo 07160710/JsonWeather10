@@ -32,7 +32,7 @@ public class JsonWeatherActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_json_weather);
-        setTitle("JSON天气查询");
+        setTitle("天气预报JSON");
         mCityname = (EditText) findViewById(R.id.cityname);
         mSearch = (Button) findViewById(R.id.search);
         mShowTV = (TextView) findViewById(R.id.show_weather);
