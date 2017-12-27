@@ -17,8 +17,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -31,11 +34,14 @@ public class JsonWeatherActivity extends AppCompatActivity{
     private AutoCompleteTextView mCityname;
     private Button mSearch;
     private TextView mShowTV;
+    String db_name = "weather";
+    String db_path = "data/data/com.example.administrator.sqlitedemo/database/";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_json_weather);
         setTitle("天气预报JSON");
+        copydb();
         mCityname = (AutoCompleteTextView) findViewById(R.id.cityname);
         mSearch = (Button) findViewById(R.id.search);
         mShowTV = (TextView) findViewById(R.id.show_weather);
@@ -88,6 +94,31 @@ public class JsonWeatherActivity extends AppCompatActivity{
             mShowTV.setText(wbf.toString());
         }catch (Exception ex){
             ex.printStackTrace();
+        }
+
+    }
+    private void copydb(){
+        File db_file = new File(db_path+db_name);
+        if(!db_file.exists()){   //如果第一次运行，文件不存在，那么就建立database目录，并从raw目录下复制weateher.db
+            File db_dir= new File(db_path);
+            if(!db_dir.exists()){  //如果database目录不存在，新建此目录
+                db_dir.mkdir();
+            }
+            InputStream is = getResources().openRawResource(R.raw.weather);//获取输入流，就是随程序打包，放到raw目录下的weather.db文件
+            try {
+                OutputStream os = new FileOutputStream(db_path+db_name);//建立一个输出流
+                byte[]buff = new byte[1024];//缓冲区大小
+                int length = 0;
+                while((length=is.read(buff))>0){
+                    os.write(buff,0,length); //将buff写入os。写入长度为实践的buff的长度
+                }
+                os.flush(); //强制把缓冲区内容写入。确保缓存区所有的内容全部写入os
+                os.close();
+                is.close();
+            }catch (Exception ee){
+                ee.printStackTrace();
+            }
+
         }
 
     }
