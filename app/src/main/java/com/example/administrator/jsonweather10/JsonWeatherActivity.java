@@ -5,6 +5,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -38,6 +39,7 @@ public class JsonWeatherActivity extends AppCompatActivity{
         mCityname = (AutoCompleteTextView) findViewById(R.id.cityname);
         mSearch = (Button) findViewById(R.id.search);
         mShowTV = (TextView) findViewById(R.id.show_weather);
+        mShowTV.setMovementMethod(ScrollingMovementMethod.getInstance());
         mSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,8 +75,14 @@ public class JsonWeatherActivity extends AppCompatActivity{
                 wbf.append("日期："+pobj.getString("date")+"\n");
                 wbf.append("最高温："+pobj.getString("high")+"\n");
                 wbf.append("最低温："+pobj.getString("low")+"\n");
-                wbf.append("风向："+pobj.getString("fengxiang"));
-                wbf.append("风力："+pobj.getString("fengli")+"\n");
+                wbf.append("风向："+pobj.getString("fengxiang")+"   ");
+
+                //新加
+                String fengli = pobj.getString("fengli");
+                int eq = fengli.indexOf("]]>");
+                fengli = fengli.substring(9,eq);
+                wbf.append("风力："+fengli+"\n");
+
                 wbf.append("天气："+pobj.getString("type")+"\n");
             }
             mShowTV.setText(wbf.toString());
