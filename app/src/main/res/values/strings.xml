@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">JsonWeather10</string>
+    <string name="hintstring">输入城市名</string>
 </resources>

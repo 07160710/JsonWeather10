@@ -6,6 +6,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -25,7 +26,8 @@ public class JsonWeatherActivity extends AppCompatActivity{
     private String cityname="广州";
     HttpURLConnection httpConn = null;
     InputStream din =null;
-    private EditText mCityname;
+    //private EditText mCityname;
+    private AutoCompleteTextView mCityname;
     private Button mSearch;
     private TextView mShowTV;
     @Override
@@ -33,7 +35,7 @@ public class JsonWeatherActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_json_weather);
         setTitle("天气预报JSON");
-        mCityname = (EditText) findViewById(R.id.cityname);
+        mCityname = (AutoCompleteTextView) findViewById(R.id.cityname);
         mSearch = (Button) findViewById(R.id.search);
         mShowTV = (TextView) findViewById(R.id.show_weather);
         mSearch.setOnClickListener(new View.OnClickListener() {
