@@ -65,7 +65,7 @@ public class JsonWeatherActivity extends AppCompatActivity{
             JSONObject jobj = new JSONObject(jData);
             JSONObject weather = jobj.getJSONObject("data");
             StringBuffer wbf = new StringBuffer();
-            wbf.append("当前温度："+weather.getString("wendu")+"\n");
+            wbf.append("当前温度："+weather.getString("wendu")+"℃"+"\n");
             wbf.append("天气提示："+weather.getString("ganmao")+"\n");
             JSONArray jary = weather.getJSONArray("forecast");
             for(int i=0;i<jary.length();i++){
