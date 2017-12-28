@@ -1,12 +1,19 @@
 package com.example.administrator.jsonweather10;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,6 +32,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JsonWeatherActivity extends AppCompatActivity{
     private String cityname="广州";
@@ -35,14 +44,15 @@ public class JsonWeatherActivity extends AppCompatActivity{
     private Button mSearch;
     private TextView mShowTV;
     String db_name = "weather";
-    String db_path = "data/data/com.example.administrator.sqlitedemo/database/";
+    String db_path = "data/data/com.example.administrator.jsonweather10/database/";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_json_weather);
         setTitle("天气预报JSON");
+        //复制数据库
         copydb();
-        mCityname = (AutoCompleteTextView) findViewById(R.id.cityname);
+
         mSearch = (Button) findViewById(R.id.search);
         mShowTV = (TextView) findViewById(R.id.show_weather);
         mShowTV.setMovementMethod(ScrollingMovementMethod.getInstance());
@@ -56,7 +66,76 @@ public class JsonWeatherActivity extends AppCompatActivity{
                 gd.start();
             }
         });
+        mCityname = (AutoCompleteTextView) findViewById(R.id.cityname);
+        mCityname.setThreshold(1);
+        mCityname.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String str = s.toString();
+                SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(db_path+db_name,null);
+                Cursor cursor = null;
+                try{
+                    cursor = db.rawQuery("select area_name from weathers where area_name like '%"+str+"%'", null);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+                List<String> list = new ArrayList<String>();
+                String pro="";
+                while(cursor.moveToNext()){
+                    pro = cursor.getString(cursor.getColumnIndex("area_name"));
+                    list.add(pro);
+
+                }
+                cursor.close();
+                final ArrayAdapter<String> adapter = new ArrayAdapter<String>(JsonWeatherActivity.this,android.R.layout.simple_spinner_dropdown_item,list);
+                mCityname.setAdapter(adapter);
+
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
     }
+//    private void searchCity(String cityname){
+//        SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(db_path+db_name,null);
+//        Cursor cursor = null;
+//        try{
+//            cursor = db.rawQuery("select area_name from weathers where area_name like '%"+cityname+"%'", null);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//        List<String> list = new ArrayList<String>();
+//        String pro="";
+//        while(cursor.moveToNext()){
+//            pro = cursor.getString(cursor.getColumnIndex("area_name"));
+//            list.add(pro);
+//        }
+//        System.out.println(list);
+//
+//        cursor.close();
+//        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(JsonWeatherActivity.this,android.R.layout.simple_spinner_dropdown_item,list);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        mCityname.setAdapter(adapter);
+//        mCityname.setThreshold(1);
+//        mCityname.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                String province = adapter.getItem(position);
+//                mCityname.setText(province);
+//                parent.setVisibility(View.VISIBLE);
+//            }
+//        });
+//
+//
+//    }
     private final Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -99,6 +178,7 @@ public class JsonWeatherActivity extends AppCompatActivity{
     }
     private void copydb(){
         File db_file = new File(db_path+db_name);
+        Log.i("weather","数据库创建");
         if(!db_file.exists()){   //如果第一次运行，文件不存在，那么就建立database目录，并从raw目录下复制weateher.db
             File db_dir= new File(db_path);
             if(!db_dir.exists()){  //如果database目录不存在，新建此目录
